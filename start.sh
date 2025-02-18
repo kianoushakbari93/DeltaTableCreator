@@ -2,10 +2,10 @@
 
 ## USER CONFIGURED PARAMS ##
 HIVE_METASTORE_VERSION="X.X.X"
-HIVE_METASTORE_URIS="thrift://clusterXX-vm0.bdauto.wandisco.com:9083"
-HIVE_PRINCIPAL="hive@WANDISCO.HADOOP"
+HIVE_METASTORE_URIS="thrift://HMS-SERVER.com:9083"
+HIVE_PRINCIPAL="hive@REALM.HADOOP"
 HIVE_KEYTAB="/etc/security/keytabs/hive.service.keytab"
-HDFS_PRINCIPAL="hdfs@WANDISCO.HADOOP"
+HDFS_PRINCIPAL="hdfs@REALM.HADOOP"
 HDFS_KEYTAB="/etc/security/keytabs/hdfs.headless.keytab"
 SPARK_DL_LINK="https://dlcdn.apache.org/spark/spark-3.5.2/spark-3.5.2-bin-hadoop3-scala2.13.tgz"
 DB_NAME="delta_db"

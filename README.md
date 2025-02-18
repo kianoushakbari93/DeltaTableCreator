@@ -2,9 +2,11 @@
 
 **_Overview_**
 
-These scripts are designed to create medium-to-large scale Delta Lake tables (up to 100,000 entries) within Hive. As this table format is not innately supported on Hive, a Hive-Delta connector jar is employed. This has meant that all tables created on Hive by these scripts are required to be non-editable. For these reasons another objective when creating the Delta tables is to achieve wide reaching test coverage, through partitions, table properties and pre-performed table operations.
-
-These scripts have been created in accordance with UAT-1377 in order to effectively test source-side Delta Lake migration.
+These scripts are designed to create medium-to-large scale Delta Lake tables (up to 100,000 entries) within Hive. As
+this table format is not innately supported on Hive, a Hive-Delta connector jar is employed. This has meant that all
+tables created on Hive by these scripts are required to be non-editable. For these reasons another objective when
+creating the Delta tables is to achieve wide-reaching test coverage, through partitions, table properties and
+pre-performed table operations.
 
 **_Tables created_**
 
@@ -13,9 +15,11 @@ This set of scripts creates the following tables:
 - **initial_table:** standard Delta Lake table created from ingest data
 - **initial_table_2:** standard Delta Lake table created from ingest data
 - **union_table:** standard Delta Lake table created from union of initial tables
-- **delete_rows_insert_table:** identical table to initial_table with the ingested data deleted before being inserted again
-- **overwrite_insert_table::** identical table to initial_table with the ingested data being overwritten to the existing table
-- **multi_partition_table:** table partitioned on birth day, month and year
+- **delete_rows_insert_table:** identical table to initial_table with the ingested data deleted before being inserted
+  again
+- **overwrite_insert_table::** identical table to initial_table with the ingested data being overwritten to the existing
+  table
+- **multi_partition_table:** table partitioned on birthday, month and year
 - **bigint_partition_table:** table partitioned on bigint phone number values
 - **timestamp_partition_table:** table partitioned on timestamp entry creation values
 - **properties_table:** table with arbitrary table properties set
@@ -39,24 +43,30 @@ Delta tables created by this script contain the following fields:
 **In start.sh:**
 
 - HIVE_METASTORE_VERSION: The version of Hive on cluster. HINT: Run the "hive --version" on any VM
-- HIVE_METASTORE_URIS: The thrift URI for HMS(Hive metastore). Search hive.metastore.uris in the hive-site.xml -> Usually HMS thrift is on vm0 on port 9083. Example: thrift://clusterx-vm0.bdauto.wandisco.com:9083
+- HIVE_METASTORE_URIS: The thrift URI for HMS(Hive metastore). Search hive.metastore.uris in the hive-site.xml ->
+  Usually HMS thrift is on vm0 on port 9083. Example: thrift://HMS-SERVER.com:9083
 - HIVE_PRINCIPAL: Hive kerberos principal
 - HIVE_KEYTAB: Location of Hive kerberos keytab
 - HDFS_PRINCIPAL: HDFS kerberos principal
 - HDFS_KEYTAB: Location of HDFS kerberos keytab
-- SPARK_DL_LINK: Link to download the related spark-3.5.x-bin-hadoop3-scala2.13.tgz from this link -> https://spark.apache.org/downloads.html
+- SPARK_DL_LINK: Link to download the related spark-3.5.x-bin-hadoop3-scala2.13.tgz from this
+  link -> https://spark.apache.org/downloads.html
 - DB_NAME: Name of database created by scripts (must be unique each time the script is run)
-- HIVE_CONNECTOR_DL_LINK: Link to download the delta hive connector JAR file -> https://github.com/delta-io/delta/releases/download/v3.2.0/delta-hive-assembly_2.13-3.2.0.zip
+- HIVE_CONNECTOR_DL_LINK: Link to download the delta hive connector JAR
+  file -> https://github.com/delta-io/delta/releases/download/v3.2.0/delta-hive-assembly_2.13-3.2.0.zip
 - EXTERNAL_PATH: Location to store the table's data
 - VOLUME_1000: number of entries in each table multiplied to 1000
-- BIGINT: boolean to determine if the user wants the phone number bigint field to be used and bigint_partition_table to be created
-- TIMESTAMP: boolean to determine if the user wants the entry creation timestamp field to be used and timestamp_partition_table to be created
+- BIGINT: boolean to determine if the user wants the phone number bigint field to be used and bigint_partition_table to
+  be created
+- TIMESTAMP: boolean to determine if the user wants the entry creation timestamp field to be used and
+  timestamp_partition_table to be created
 - STRUCT: boolean to determine if the user wants the address array field to be used
 - ITERATIONS: number of times to run the script to create n number of databases
 
 **_Pre-configurations on Cluster_**
 
-- On **VM0** run the commands bellow, to download the Delta Hive Assembly archiv(delta-hive-assembly\*2.13-3.2.0.zip) and put it in this path → /opt/hive-aux-jars/
+- On **VM0** run the commands bellow, to download the Delta Hive Assembly archive(delta-hive-assembly\*2.13-3.2.0.zip)
+  and put it in this path → /opt/hive-aux-jars/
 
 - _mkdir /opt/hive-aux-jars_
 
@@ -72,30 +82,38 @@ Delta tables created by this script contain the following fields:
 
 **On HDP:**
 
-- Add these properties to the Custom hive-site in the cluster manager to Hive: Cluster manager → Hive → ADVANCED → Custom hive-site
+- Add these properties to the Custom hive-site in the cluster manager to Hive: Cluster manager → Hive → ADVANCED →
+  Custom hive-site
 
-    - _hive.aux.jars.path=file:///opt/hive-aux-jars/delta-hive-assembly_2.13-3.1.0.jar,<comma-separate-if-you-have-any-other-jar.jar>_
+    - _hive.aux.jars.path=file:///opt/hive-aux-jars/delta-hive-assembly_2.13-3.1.0.jar,<
+      comma-separate-if-you-have-any-other-jar.jar>_
 
     - _hive.input.format=io.delta.hive.HiveInputFormat_
 
     - _hive.security.authorization.sqlstd.confwhitelist.append=hive\.input\.format|<pipe-will-separate-the-values>_
 
 
-- Search and change the hive.tez.input.format to io.delta.hive.HiveInputFormat inside the Hive: Cluster manager → Hive → ADVANCED → Advanced hive-site
+- Search and change the hive.tez.input.format to io.delta.hive.HiveInputFormat inside the Hive: Cluster manager → Hive →
+  ADVANCED → Advanced hive-site
 
-- Search and find "Auxiliary JAR list" in the Hive and set the value to the Delta uber jar file path: Cluster manager → Hive → ADVANCED
+- Search and find "Auxiliary JAR list" in the Hive and set the value to the Delta uber jar file path: Cluster manager →
+  Hive → ADVANCED
 
 - Restart the required services to take effect.
 
 **On CDP:**
 
-- Add these 4 properties to the hive-site.xml through the hive-on-tez1 in the cluster manager. Cluster manager → hive-on-tez1 → Configuration → search for "Hive Service Advanced Configuration Snippet (Safety Valve) for hive-site.xml"
+- Add these 4 properties to the hive-site.xml through the hive-on-tez1 in the cluster manager. Cluster manager →
+  hive-on-tez1 → Configuration → search for "Hive Service Advanced Configuration Snippet (Safety Valve) for
+  hive-site.xml"
     - hive.security.authorization.sqlstd.confwhitelist.append=hive\.input\.format
     - hive.tez.input.format=io.delta.hive.HiveInputFormat
     - hive.input.format=io.delta.hive.HiveInputFormat
     - hive.aux.jars.path=file:///opt/hive-aux-jars/delta-hive-assembly_2.13-3.1.0.jar
 
-- Search for Hive Auxiliary JARs Directory in the hive-on-tez1 in the cluster and set the value to the path for directory that contain the Delta uber JAR file: Cluster manager → hive-on-tez1 → Configuration → search for "Hive Auxiliary JARs Directory" and add this path → "/opt/hive-aux-jars/"
+- Search for Hive Auxiliary JARs Directory in the hive-on-tez1 in the cluster and set the value to the path for
+  directory that contain the Delta uber JAR file: Cluster manager → hive-on-tez1 → Configuration → search for "Hive
+  Auxiliary JARs Directory" and add this path → "/opt/hive-aux-jars/"
 
 - Restart the required services to take effect.
 
@@ -117,15 +135,21 @@ _How to run_
 
 - ./start.sh
 
-The scripts were originally going to create a further table which had one of its columns dropped. However the Hive-Delta connector version 3.2.0 jar only has Delta reader 1 and writer 2 available to it, whilst column operations are only possible on reader 2 and writer 5 or above. The code to create this table still exists in main.py to potentially be re-incorporated when the connector supports these versions.
+The scripts were originally going to create a further table which had one of its columns dropped. However, the
+Hive-Delta connector version 3.2.0 jar only has Delta reader 1 and writer 2 available to it, whilst column operations
+are only possible on reader 2 and writer 5 or above. The code to create this table still exists in main.py to
+potentially be re-incorporated when the connector supports these versions.
 
-If the scripts are run on a CDH machine more than once it will cause the connector jar to be temporarily loaded incorrectly. This is a CDH related issue that cannot be resolved currently. It does NOT impact the creation and population of the Delta tables, it does stop the Delta data from being queried (i.e. SELECT _ FROM) however the Delta tables themselves can still be queried in this period (i.e. SELECT COUNT(_) FROM). If left for approximately 3 hours this issue does resolve itself.
+If the scripts are run on a CDH machine more than once it will cause the connector jar to be temporarily loaded
+incorrectly. This is a CDH related issue that cannot be resolved currently. It does NOT impact the creation and
+population of the Delta tables, it does stop the Delta data from being queried (i.e. SELECT _ FROM) however the Delta
+tables themselves can still be queried in this period (i.e. SELECT COUNT(_) FROM). If left for approximately 3 hours
+this issue does resolve itself.
 
 **_Process Flow_**
 
 **BASH**
 
-- Copy the ALTERDROP.sql script in the staging directory for later to run in Hive
 - Download and install Spark if it doesn’t already exist
 - Delete spark tgz
 - Download a few JAR files from Maven repository for the Spark to work with Hive
@@ -166,7 +190,6 @@ If the scripts are run on a CDH machine more than once it will cause the connect
 - Kinit as Hive user
 - Enter beeline (through hive)
 - Use the created database
-- ALTER & DROP the Delta tables that are not working with the Hive by running the ALTERDROP.sql
 - Run table creation SQL script (created previously)
 - Show tables created
 - Destroy kerberos details
