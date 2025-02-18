@@ -190,7 +190,8 @@ def ingest_from_df_partition(table_name, partitions, df):
     """initiates partitioned delta table creation and ingests data from initial delta table"""
 
     path_option = create_external_path(table_name)
-    df.write.mode('append').format("delta").partitionBy(partitions).save(**path_option)
+    df.write.mode('append').format("delta").partitionBy(
+        partitions).save(**path_option)
 
 
 def ingest_from_df_property(table_name, properties, df):
@@ -252,7 +253,8 @@ def delete_insert_table(table_name, df):
     df.limit(0).write.mode('append').format('delta').save(**path_option)
     existing_data_frame = data_frame_reader(table_name)
     if existing_data_frame.isEmpty():
-        df.limit(5).write.mode('overwrite').format('delta').saveAsTable(table_name, **path_option)
+        df.limit(5).write.mode('overwrite').format(
+            'delta').saveAsTable(table_name, **path_option)
         spark.sql("delete from " + table_name)
         df.write.mode('append').format('delta').save(**path_option)
         spark.sql("drop table " + table_name)
